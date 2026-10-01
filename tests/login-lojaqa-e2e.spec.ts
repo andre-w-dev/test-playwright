@@ -29,16 +29,82 @@ test.describe('ato 2 caminho feliz', async () => {
           //navegar ate pagina de login
         await page.goto(`${BASE_URL}/login.html`)
         //preencher campos utilizando o fill()
-        await page.fill('#email', 'admin@system.com')
-        await page.fill('#password', 'adminpassword123');
+        await page.fill('#email', 'andredev123@gmail.com')
+        await page.fill('#password', '123456789');
         //validar btn ativo
         await expect(page.locator('#loginBtn')).toBeEnabled();
         //clicar no btn
         await page.click('#loginBtn');
         //validar redirecionamento
-        await expect(page).toHaveURL(/painel.html/);
+        await expect(page).toHaveURL(/painel\.html/);
         
 
     })
 
-})
+    test('verificar botão de login desativado quando o campo de email está incorreto', async ({page}) => {
+        //navegar ate pagina de login
+        await page.goto(`${BASE_URL}/login.html`)
+        //preencher campos utilizando o fill()
+        await page.fill('#email', 'email-invalido');
+        await page.fill('#password', '123456789');
+        //validar btn desativado
+        await expect(page.locator('#loginBtn')).toBeDisabled();
+    })
+        
+
+    })
+
+    test.describe('ato 3 caminho triste', async () => {
+        test('verificar mensagem de erro quando o campo de email está incorreto', async ({page}) => {
+            //navegar ate pagina de login
+            await page.goto(`${BASE_URL}/login.html`)
+            //preencher campos utilizando o fill()
+            await page.fill('#email', 'emailinvalido@gmail.com');
+            await page.fill('#password', '123456789');
+            // Clicar no botão Entrar para submeter o formulário
+        await page.click('#loginBtn');
+            //validar mensagem de erro
+            await expect(page.locator('#errorMessage')).toBeVisible();
+            await expect(page.locator('#errorMessage')).toHaveText('Erro: usuário não encontrado. Tentativa 1 de 3.');
+        })
+
+        //criar usuarios de cliente e lojista e validar o formulario de cadastro e o login com esses usuarios
+        test('criar usuario de cliente e de lojista e validar o formulario de cadastro e o login com esses usuarios', async ({page}) => {
+             //navegar ate pagina de login
+        await page.goto(`${BASE_URL}/login.html`)
+        //clicar no btn de criar conta
+        await page.locator('[onclick*="section-register"]').click();
+        //preencher campos do formulario de cadastro para o usuario cliente
+        await page.fill('#reg-name', 'Cliente Teste');
+        await page.fill('#reg-email', 'clientetest@gmail.com');
+        await page.fill('#reg-password', '123456789');
+        await page.selectOption('#reg-role', 'Cliente');
+        await page.click('#registerBtn');
+        //acessar o login com o usuario criado
+        await page.fill('#email', 'clientetest@gmail.com');
+        await page.fill('#password', '123456789');
+        await page.click('#loginBtn');
+        await expect(page).toHaveURL(/painel\.html/);
+
+        })
+
+      //navegar ate pagina de login
+        await page.goto(`${BASE_URL}/login.html`)
+        //clicar no btn de criar conta
+        await page.locator('[onclick*="section-register"]').click();
+        //preencher campos do formulario de cadastro para o usuario lojista
+        await page.fill('#reg-name', 'Lojista Teste');
+        await page.fill('#reg-email', 'lojistatest@gmail.com');
+        await page.fill('#reg-password', '123456789');
+        await page.selectOption('#reg-role', 'Lojista');
+        await page.fill('#reg-store', 'Loja Teste');
+        await page.click('#registerBtn');
+        //acessar o login com o usuario criado
+        await page.goto(`${BASE_URL}/login.html`)
+        await page.fill('#email', 'lojistatest@gmail.com');
+        await page.fill('#password', '123456789');
+        await page.click('#loginBtn');
+        await expect(page).toHaveURL(/painel\.html/);
+           
+
+    })
